@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search</title>
+<link rel="icon" href="data:,">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #fff;
+    color: #1b1d21;
+    font-family: Arial, "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  /* ---- home state: big centered search ---- */
+  #top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+  }
+  .logo {
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .logo span { color: #4f8cff; }
+  #go {
+    display: flex;
+    width: min(640px, 100%);
+  }
+  #url {
+    flex: 1;
+    border: 1px solid #d7dade;
+    border-right: 0;
+    border-radius: 24px 0 0 24px;
+    padding: 14px 20px;
+    font-size: 15px;
+    outline: none;
+  }
+  #url:focus { border-color: #4f8cff; }
+  #go button {
+    background: #4f8cff;
+    color: #fff;
+    border: 0;
+    border-radius: 0 24px 24px 0;
+    padding: 0 26px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  #status { font-size: 12px; color: #9aa0a6; min-height: 14px; }
+  /* ---- browsing state: slim docked bar + full page ---- */
+  body.browsing #top {
+    flex: 0;
+    flex-direction: row;
+    gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e3e5e8;
+    background: #f7f8f9;
+  }
+  body.browsing .logo { font-size: 18px; }
+  body.browsing #go { flex: 1; width: auto; }
+  body.browsing #url { padding: 8px 14px; font-size: 14px; }
+  body.browsing #go button { padding: 0 18px; font-size: 14px; }
+  body.browsing #status { display: none; }
+  #stage {
+    display: none;
+    border: 0;
+    width: 100%;
+    flex: 1;
+    background: #fff;
+  }
+  body.browsing #stage { display: block; }
+</style>
+</head>
+<body>
+<div id="top">
+  <div class="logo">Study<span>Hub</span></div>
+  <form id="go">
+    <input id="url" type="text" placeholder="Search or type a link" autocomplete="off" autofocus>
+    <button type="submit">Go</button>
+  </form>
+  <div id="status"></div>
+</div>
+<iframe id="stage" title="content"></iframe>
+
+<script src="/uv/uv.bundle.js"></script>
+<script src="/uv/uv.config.js"></script>
+<script src="/baremux/index.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
