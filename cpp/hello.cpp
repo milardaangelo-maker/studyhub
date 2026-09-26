@@ -1,6 +1,8 @@
 // Portable hello world + process list (pid, parent pid, threads, name): builds with MSVC and MinGW (and g++/clang++ on Linux).
 //   MSVC:   cl /EHsc /W4 /std:c++17 hello.cpp
 //   MinGW:  g++ -std=c++17 -Wall -Wextra -o hello.exe hello.cpp
+#include <cstddef>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,7 +13,6 @@
 #include <tlhelp32.h>
 #else
 #include <filesystem>
-#include <fstream>
 #include <sstream>
 #endif
 
@@ -55,10 +56,33 @@ std::vector<ProcessInfo> listProcesses()
     return result;
 }
 
-int main()
+// Read a whole file into a byte buffer. Standard C++ only, so it behaves
+// identically under MSVC, MinGW and g++/clang++. Opened in binary mode so no
+// newline translation happens; the buffer holds the file's exact bytes.
+std::vector<std::byte> readFileBytes(const std::string& path)
+{
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (!file) return {};  // missing/unreadable file -> empty buffer
+
+    const std::streamsize size = file.tellg();
+    if (size <= 0) return {};  // empty file, or tellg() failed
+    file.seekg(0);
+
+    std::vector<std::byte> bytes(static_cast<std::size_t>(size));
+    file.read(reinterpret_cast<char*>(bytes.data()), size);
+    bytes.resize(static_cast<std::size_t>(file.gcount()));  // trust bytes actually read
+    return bytes;
+}
+
+int main(int argc, char** argv)
 {
     std::cout << "Hello, world!\n\nRunning processes:\n  PID\tPPID\tTHREADS\tNAME\n";
     for (const auto& p : listProcesses())
         std::cout << "  " << p.pid << "\t" << p.ppid << "\t" << p.threads << "\t" << p.name << "\n";
+
+    if (argc > 1) {
+        const auto bytes = readFileBytes(argv[1]);
+        std::cout << "\nRead " << bytes.size() << " bytes from " << argv[1] << "\n";
+    }
     return 0;
 }
